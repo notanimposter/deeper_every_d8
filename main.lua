@@ -62,9 +62,13 @@ function heart_down ()
 end
 function heart_up ()
 	local love_was = Bachelors.current.love
-	Bachelors.current.love = math.min (Bachelors.current.love + 0.5, HEARTS_MAX)
-	Assets.Sounds.doki_doki:play ()
+	if Bachelors.current.love < HEARTS_MAX then
+		Bachelors.current.love = Bachelors.current.love + 0.5
+		Assets.Sounds.doki_doki:play ()
+	end
+	
 	if love_was < HEARTS_MAX and Bachelors.current.love >= HEARTS_MAX then
+		Bachelors.current.love = 9999
 		local not_everyone = false
 		for k,v in pairs (Bachelors) do
 			if v.love < HEARTS_MAX then
@@ -77,11 +81,18 @@ function heart_up ()
 				cards_done = cards_done + 1
 			end
 		end
+		local special_text = ""
+		if cards_done >= #CARDS then
+			special_text = "Full house!"
+		end
+		if not not_everyone then
+			special_text = "All 8!"
+		end
 		local friendzone_or_win = "I know we're going to be friends forever!       "
 		if bachelor_is_card (Bachelors.current) then
 			friendzone_or_win = "I... love you, $PLAYER_NAME."
 			BachelorSpeech.set_callback (function ()
-				RESPONSES = {{text="You and "..Bachelors.current.name.." live happily ever after."},{text=((cards_done >= #CARDS) and "Full house!" or "")},{text="[continue]",click=bachelor_converse}}
+				RESPONSES = {{text="You and "..Bachelors.current.name.." live happily ever after."},{text=special_text},{text="[continue]",click=bachelor_converse}}
 			end)
 			--local n = CARDS.revealed
 			for i=CARDS.revealed,#CARDS do
@@ -96,7 +107,7 @@ function heart_up ()
 			--if n == CARDS.revealed then card_reveal () end
 		else
 			BachelorSpeech.set_callback (function ()
-				RESPONSES = {{text="It's just not in the cards for you"},{text="and "..Bachelors.current.name..". "..((not not_everyone) and "ALL 8!" or "")},{text="[continue]", click=bachelor_converse}}
+				RESPONSES = {{text="It's just not in the cards for you"},{text="and "..Bachelors.current.name..". "..special_text},{text="[continue]", click=bachelor_converse}}
 			end)
 			card_reveal () -- reveal a card if this bachelor wasn't one of them
 		end
