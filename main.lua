@@ -337,14 +337,16 @@ function love.mousepressed (x, y, button)
 			RESPONSES[HOVERING.index].click ()
 		end
 	elseif button == 1 and HOVERING.type == 'other_bachelor' then
+		if Locations.current.spawnsHere[HOVERING.index] ~= Bachelors.current then
 		BachelorSpeech.say ("Ok, see you around!               ")
-		local nextBachelor = Locations.current.spawnsHere[HOVERING.index]
-		BachelorSpeech.set_callback (function ()
-			Bachelors.current.onDate = false
-			Bachelors.current = nextBachelor
-			bachelor_hello ()
-		end)
-		RESPONSES = {}
+			local nextBachelor = Locations.current.spawnsHere[HOVERING.index]
+			BachelorSpeech.set_callback (function ()
+				Bachelors.current.onDate = false
+				Bachelors.current = nextBachelor
+				bachelor_hello ()
+			end)
+			RESPONSES = {}
+		end
 	end
 end
 function smolprint (text, x, y)
